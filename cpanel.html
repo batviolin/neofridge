@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeoFridge Smart Control Panel</title>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+  /* ===== Base Layout ===== */
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(circle at top left, #00c6ff, #0072ff);
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* start, so top isn’t hidden by bookmarks */
+    padding-top: 60px; /* Prevent top clipping */
+  }
+
+  /* ===== Main Panel ===== */
+  .panel {
+    position: relative;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    box-shadow: 0 0 35px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(15px);
+    width: 90%;
+    max-width: 950px;
+    padding: 50px 40px 40px 40px;
+    margin-bottom: 60px;
+  }
+
+  /* ===== Logo ===== */
+  .logo {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    padding: 5px;
+  }
+
+  .logo span {
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #fff;
+    text-shadow: 0 0 5px rgba(0,0,0,0.4);
+  }
+
+  /* ===== Headings ===== */
+  h1 {
+    font-size: 2.3em;
+    margin-bottom: 10px;
+  }
+
+  .subtitle {
+    color: #dff;
+    margin-bottom: 30px;
+  }
+
+  /* ===== Temperature Section ===== */
+  .temp-control {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .temp-display {
+    font-size: 3em;
+    font-weight: 600;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(0,0,0,0.4);
+  }
+
+  .temp-buttons {
+    display: flex;
+    align-items: center;
+  }
+
+  .temp-buttons button {
+    background: #00c6ff;
+    border: none;
+    color: white;
+    padding: 12px 20px;
+    font-size: 1.2em;
+    border-radius: 8px;
+    margin: 0 5px;
+    transition: 0.3s;
+    cursor: pointer;
+  }
+
+  .temp-buttons button:hover {
+    background: #0096d1;
+    transform: scale(1.05);
+  }
+
+  /* ===== Inventory Section ===== */
+  .inventory {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 15px;
+    padding: 25px;
+  }
+
+  .inventory input {
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    width: 65%;
+    font-size: 1em;
+    margin-right: 10px;
+    outline: none;
+  }
+
+  .inventory button {
+    background: #00c6ff;
+    border: none;
+    color: #fff;
+    padding: 12px 20px;
+    font-size: 1em;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  .inventory button:hover {
+    background: #0096d1;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+  }
+
+  li {
+    background: rgba(255, 255, 255, 0.2);
+    border-left: 5px solid #00c6ff;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .remove-btn {
+    background: #ff4d4d;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    border: none;
+    cursor: pointer;
+    color: white;
+    transition: 0.3s;
+  }
+
+  .remove-btn:hover {
+    background: #cc0000;
+  }
+
+  /* ===== Text to Speech Button ===== */
+  .tts {
+    text-align: center;
+    margin-top: 30px;
+  }
+
+  .tts button {
+    background: #ffcc00;
+    color: #333;
+    font-weight: 600;
+  }
+
+  .tts button:hover {
+    background: #e6b800;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 0.9em;
+    opacity: 0.8;
+  }
+
+  /* ===== Responsive Design ===== */
+  @media (max-width: 600px) {
+    .temp-control {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .temp-buttons {
+      margin-top: 10px;
+    }
+
+    .inventory input {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .logo {
+      position: static;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="panel">
+    <!-- Logo -->
+    <div class="logo">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Fridge_icon.svg/1024px-Fridge_icon.svg.png" alt="NeoFridge Logo">
+      <span>NeoFridge</span>
+    </div>
+
+    <!-- Header -->
+    <h1>Smart Control Panel</h1>
+    <p class="subtitle">Manage your fridge temperature and inventory effortlessly.</p>
+
+    <!-- Temperature Control -->
+    <div class="temp-control" id="tempSection">
+      <div>
+        <h2>Temperature</h2>
+        <p>Set your desired fridge temperature.</p>
+      </div>
+      <div class="temp-buttons">
+        <button id="decreaseTemp">−</button>
+        <span class="temp-display" id="temperature">4°C</span>
+        <button id="increaseTemp">+</button>
+      </div>
+    </div>
+
+    <!-- Inventory -->
+    <div class="inventory" id="inventorySection">
+      <h2>Inventory</h2>
+      <input type="text" id="itemInput" placeholder="Add an item...">
+      <button id="addItem">Add</button>
+      <ul id="itemList"></ul>
+    </div>
+
+    <!-- Text-to-Speech -->
+    <div class="tts">
+      <button id="speakAll">🔊 Read Aloud Status</button>
+    </div>
+
+    <footer>© 2025 NeoFridge Technologies</footer>
+  </div>
+
+<script>
+  // ===== Temperature Control =====
+  let temperature = 4;
+  const tempDisplay = document.getElementById('temperature');
+  const decreaseTemp = document.getElementById('decreaseTemp');
+  const increaseTemp = document.getElementById('increaseTemp');
+
+  function updateTempDisplay() {
+    tempDisplay.textContent = `${temperature}°C`;
+    speak(`Fridge temperature is now ${temperature} degrees Celsius`);
+  }
+
+  decreaseTemp.addEventListener('click', () => {
+    if (temperature > -5) temperature--;
+    updateTempDisplay();
+  });
+
+  increaseTemp.addEventListener('click', () => {
+    if (temperature < 10) temperature++;
+    updateTempDisplay();
+  });
+
+  // ===== Inventory Management =====
+  const itemInput = document.getElementById('itemInput');
+  const addItem = document.getElementById('addItem');
+  const itemList = document.getElementById('itemList');
+
+  function createItemElement(item) {
+    const li = document.createElement('li');
+    li.textContent = item;
+    const removeBtn = document.createElement('button');
+    removeBtn.textContent = "Remove";
+    removeBtn.className = 'remove-btn';
+    removeBtn.onclick = () => {
+      speak(`${item} removed from inventory`);
+      li.remove();
+    };
+    li.appendChild(removeBtn);
+    return li;
+  }
+
+  addItem.addEventListener('click', () => {
+    const item = itemInput.value.trim();
+    if (item) {
+      const li = createItemElement(item);
+      itemList.appendChild(li);
+      speak(`${item} added to inventory`);
+      itemInput.value = '';
+    }
+  });
+
+  // ===== Text to Speech =====
+  function speak(text) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 1;
+    utterance.pitch = 1;
+    utterance.volume = 1;
+    utterance.lang = 'en-US';
+    window.speechSynthesis.speak(utterance);
+  }
+
+  document.getElementById('speakAll').addEventListener('click', () => {
+    const inventoryItems = Array.from(itemList.children).map(li => li.textContent.replace('Remove', '').trim());
+    const inventoryText = inventoryItems.length > 0 ? inventoryItems.join(', ') : 'No items in inventory.';
+    const text = `
+      NeoFridge status report.
+      Current temperature: ${temperature} degrees Celsius.
+      Inventory: ${inventoryText}.
+    `;
+    speak(text);
+  });
+</script>
+</body>
+</html>
