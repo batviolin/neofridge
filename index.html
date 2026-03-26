@@ -520,12 +520,18 @@
   const cartCountEl = document.getElementById('cartCount');
   const cartTotalEl = document.getElementById('cartTotal');
 
-  let cart = [];
+  // ✅ LOAD CART FROM LOCAL STORAGE
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
   cartToggle.addEventListener('click', () => cartPanel.classList.add('open'));
   closeCart.addEventListener('click', () => cartPanel.classList.remove('open'));
 
-  // Add to cart
+  // ✅ SAVE CART
+  function saveCart() {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }
+
+  // Add to cart (manual click)
   document.querySelectorAll('.add-btn').forEach(btn => {
     btn.addEventListener('click', e => {
       const card = e.target.closest('.item-card');
@@ -543,12 +549,42 @@
     });
   });
 
+  // ✅ AUTO ADD ITEM FROM URL (PictoBlox)
+  const params = new URLSearchParams(window.location.search);
+  const itemFromURL = params.get("item");
+
+  if (itemFromURL) {
+    const card = document.querySelector(`.item-card[data-name="${itemFromURL}"]`);
+
+    if (card) {
+      const name = card.dataset.name;
+      const price = parseFloat(card.dataset.price);
+      const img = card.dataset.img;
+
+      const existing = cart.find(i => i.name === name);
+
+      if (existing) {
+        existing.qty++;
+      } else {
+        cart.push({ name, price, img, qty: 1 });
+      }
+
+      // ✅ Remove query from URL after adding (prevents duplicate add on refresh)
+      window.history.replaceState({}, document.title, window.location.pathname);
+
+      // ✅ OPTIONAL: Auto open cart when item added
+      cartPanel.classList.add('open');
+    }
+  }
+
   function updateCart() {
     cartItemsEl.innerHTML = '';
     let total = 0, count = 0;
+
     cart.forEach(item => {
       total += item.price * item.qty;
       count += item.qty;
+
       const div = document.createElement('div');
       div.className = 'cart-item';
       div.innerHTML = `
@@ -563,8 +599,11 @@
       `;
       cartItemsEl.appendChild(div);
     });
+
     cartCountEl.textContent = count;
     cartTotalEl.textContent = total.toFixed(2);
+
+    saveCart(); // ✅ SAVE AFTER EVERY UPDATE
   }
 
   function changeQty(name, delta){
@@ -589,6 +628,9 @@
       card.style.display = match ? 'block' : 'none';
     });
   });
+
+  // ✅ LOAD CART ON PAGE OPEN
+  updateCart();
 </script>
 
 </body>
