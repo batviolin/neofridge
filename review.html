@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeoFridge AI - Reviews</title>
+  <style>
+    :root {
+      --primary: #00d4ff;
+      --dark: #0a0a0a;
+      --gray: #1a1a1a;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0a0a0a, #1a0033);
+      color: white;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .logo {
+      font-size: 3rem;
+      font-weight: bold;
+      background: linear-gradient(90deg, #00d4ff, #7b00ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: #aaa;
+      font-size: 1.2rem;
+    }
+
+    .review-form {
+      background: var(--gray);
+      padding: 30px;
+      border-radius: 20px;
+      margin-bottom: 40px;
+      border: 1px solid rgba(0, 212, 255, 0.2);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #ddd;
+      font-weight: 500;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 14px;
+      background: #222;
+      border: 1px solid #444;
+      border-radius: 10px;
+      color: white;
+      font-size: 1rem;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2);
+    }
+
+    .star-rating {
+      display: flex;
+      gap: 5px;
+      font-size: 2rem;
+      margin-bottom: 15px;
+      cursor: pointer;
+    }
+
+    .star {
+      color: #444;
+      transition: all 0.2s;
+    }
+
+    .star.active {
+      color: #ffd700;
+    }
+
+    button {
+      background: linear-gradient(90deg, #00d4ff, #7b00ff);
+      color: white;
+      padding: 14px 32px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 212, 255, 0.3);
+    }
+
+    .reviews-section h2 {
+      margin-bottom: 30px;
+      font-size: 2rem;
+      text-align: center;
+    }
+
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 25px;
+    }
+
+    .review-card {
+      background: var(--gray);
+      border-radius: 16px;
+      padding: 24px;
+      border: 1px solid rgba(0, 212, 255, 0.1);
+      transition: all 0.3s;
+    }
+
+    .review-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--primary);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(45deg, #00d4ff, #7b00ff);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    .stars {
+      color: #ffd700;
+      font-size: 1.3rem;
+    }
+
+    .review-text {
+      line-height: 1.6;
+      color: #ddd;
+      margin-bottom: 15px;
+    }
+
+    .review-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+      color: #888;
+    }
+
+    .date {
+      font-style: italic;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: #777;
+      font-size: 1.1rem;
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      border: 1px dashed #444;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">NeoFridge AI</div>
+      <h1>Customer Reviews</h1>
+      <p class="subtitle">Share your experience with the smartest fridge in the world</p>
+    </header>
+
+    <!-- Review Form -->
+    <div class="review-form">
+      <h2>Write a Review</h2>
+      <div class="success-message" id="successMsg">Thank you! Your review has been posted successfully.</div>
+      
+      <form id="reviewForm">
+        <div class="form-group">
+          <label>Your Name</label>
+          <input type="text" id="name" placeholder="Enter your name" required>
+        </div>
+
+        <div class="form-group">
+          <label>Rating</label>
+          <div class="star-rating" id="starRating">
+            <span class="star active" data-value="1">★</span>
+            <span class="star active" data-value="2">★</span>
+            <span class="star active" data-value="3">★</span>
+            <span class="star active" data-value="4">★</span>
+            <span class="star active" data-value="5">★</span>
+          </div>
+          <input type="hidden" id="rating" value="5">
+        </div>
+
+        <div class="form-group">
+          <label>Your Review</label>
+          <textarea id="reviewText" rows="5" placeholder="Tell us about your experience with NeoFridge AI..." required></textarea>
+        </div>
+
+        <button type="submit">Submit Review</button>
+      </form>
+    </div>
+
+    <!-- Reviews Section -->
+    <div class="reviews-section">
+      <h2>Community Reviews <span id="reviewCount">(0)</span></h2>
+      <div id="emptyState" class="empty-state">
+        No reviews yet. Be the first to share your experience!
+      </div>
+      <div class="reviews-grid" id="reviewsGrid" style="display: none;">
+        <!-- Reviews will be added here dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let reviews = []; // Start with empty array
+
+    const reviewsGrid = document.getElementById('reviewsGrid');
+    const emptyState = document.getElementById('emptyState');
+    const reviewForm = document.getElementById('reviewForm');
+    const successMsg = document.getElementById('successMsg');
+    const reviewCount = document.getElementById('reviewCount');
+    let currentRating = 5;
+
+    // Render all reviews
+    function renderReviews() {
+      reviewsGrid.innerHTML = '';
+
+      if (reviews.length === 0) {
+        emptyState.style.display = 'block';
+        reviewsGrid.style.display = 'none';
+      } else {
+        emptyState.style.display = 'none';
+        reviewsGrid.style.display = 'grid';
+      }
+
+      reviews.forEach(review => {
+        const card = document.createElement('div');
+        card.className = 'review-card';
+
+        let starsHTML = '';
+        for (let i = 1; i <= 5; i++) {
+          starsHTML += `<span style="color: ${i <= review.rating ? '#ffd700' : '#444'}">★</span>`;
+        }
+
+        card.innerHTML = `
+          <div class="review-header">
+            <div class="user-info">
+              <div class="avatar">${review.name.charAt(0).toUpperCase()}</div>
+              <div>
+                <strong>${review.name}</strong>
+              </div>
+            </div>
+            <div class="stars">${starsHTML}</div>
+          </div>
+          <p class="review-text">"${review.text}"</p>
+          <div class="review-footer">
+            <span class="date">${review.date}</span>
+          </div>
+        `;
+        reviewsGrid.appendChild(card);
+      });
+
+      reviewCount.textContent = `(${reviews.length})`;
+    }
+
+    // Star rating functionality
+    function setupStarRating() {
+      const stars = document.querySelectorAll('.star');
+      const ratingInput = document.getElementById('rating');
+
+      stars.forEach(star => {
+        star.addEventListener('click', () => {
+          currentRating = parseInt(star.dataset.value);
+          ratingInput.value = currentRating;
+
+          stars.forEach(s => {
+            s.classList.toggle('active', parseInt(s.dataset.value) <= currentRating);
+          });
+        });
+
+        // Hover effect
+        star.addEventListener('mouseover', () => {
+          const value = parseInt(star.dataset.value);
+          stars.forEach(s => {
+            s.style.color = parseInt(s.dataset.value) <= value ? '#ffd700' : '#444';
+          });
+        });
+
+        star.addEventListener('mouseout', () => {
+          stars.forEach(s => {
+            s.style.color = parseInt(s.dataset.value) <= currentRating ? '#ffd700' : '#444';
+          });
+        });
+      });
+    }
+
+    // Form submission
+    reviewForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value.trim();
+      const reviewText = document.getElementById('reviewText').value.trim();
+
+      if (!name || !reviewText) return;
+
+      const newReview = {
+        name: name,
+        rating: currentRating,
+        text: reviewText,
+        date: new Intl.DateTimeFormat('en-US', { 
+          month: 'long', 
+          day: 'numeric', 
+          year: 'numeric' 
+        }).format(new Date())
+      };
+
+      reviews.unshift(newReview); // Add new review at the top
+      renderReviews();
+
+      // Show success message
+      successMsg.style.display = 'block';
+      setTimeout(() => {
+        successMsg.style.display = 'none';
+      }, 4000);
+
+      // Reset form
+      reviewForm.reset();
+      currentRating = 5;
+
+      // Reset stars to 5
+      document.querySelectorAll('.star').forEach(star => {
+        star.classList.toggle('active', parseInt(star.dataset.value) <= 5);
+      });
+    });
+
+    // Initialize the page
+    function init() {
+      renderReviews();
+      setupStarRating();
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
