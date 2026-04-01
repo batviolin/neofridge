@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +6,6 @@
     <title>NeoFridge | Accessible Smart Control</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap');
-
         :root {
             --primary: #00f2fe;
             --secondary: #4facfe;
@@ -17,99 +15,63 @@
             --glass: rgba(255, 255, 255, 0.08);
             --glass-border: rgba(255, 255, 255, 0.15);
         }
-
         body { 
-            margin: 0; 
-            font-family: 'Outfit', sans-serif; 
+            margin: 0; font-family: 'Outfit', sans-serif; 
             background: radial-gradient(circle at top right, #1e293b, #0f172a); 
-            color: #f8fafc; 
-            min-height: 100vh; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center;
-            padding: 20px;
-            overflow: hidden;
+            color: #f8fafc; min-height: 100vh; 
+            display: flex; justify-content: center; align-items: center; padding: 20px; overflow: hidden;
         }
-
         .panel { 
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 32px; 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
-            backdrop-filter: blur(16px); 
-            width: 100%; 
-            max-width: 600px; 
-            padding: 40px;
+            background: var(--glass); border: 1px solid var(--glass-border);
+            border-radius: 32px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
+            backdrop-filter: blur(16px); width: 100%; max-width: 600px; padding: 40px;
         }
-
         h1 { font-size: 2.2em; text-align: center; margin: 0; background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .subtitle { color: #94a3b8; text-align: center; margin-bottom: 30px; font-size: 0.9em; text-transform: uppercase; }
-
         .temp-control { background: rgba(0, 0, 0, 0.2); border-radius: 24px; padding: 20px; margin-bottom: 25px; text-align: center; }
-        .temp-display { font-size: 3.5em; font-weight: 600; display: block; margin: 10px 0; text-shadow: 0 0 20px rgba(0, 242, 254, 0.4); }
-
+        .temp-display { font-size: 3.5em; font-weight: 600; display: block; margin: 10px 0; }
         .btn-round { background: var(--glass); border: 1px solid var(--glass-border); color: white; width: 50px; height: 50px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; }
-        
-        .inventory h2 { font-size: 1.2rem; color: var(--primary); }
-        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
         .inventory input { flex: 1; padding: 14px; border-radius: 14px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white; }
-        
-        .btn-add { background: linear-gradient(135deg, var(--primary), var(--secondary)); border: none; padding: 0 20px; border-radius: 14px; font-weight: 600; cursor: pointer; }
-
+        .btn-add { background: linear-gradient(135deg, var(--primary), var(--secondary)); border: none; padding: 12px 20px; border-radius: 14px; font-weight: 600; cursor: pointer; }
         ul { list-style: none; padding: 0; max-height: 200px; overflow-y: auto; }
         li { background: var(--glass); padding: 12px 20px; border-radius: 16px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-
-        /* Voice Button */
         .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px; }
         #toggleVoice { background: var(--success); color: #000; border: none; padding: 15px; border-radius: 16px; font-weight: 800; cursor: pointer; }
         #toggleVoice.listening { background: var(--danger); color: white; animation: pulse 1.5s infinite; }
-
-        /* Custom Popup Overlay */
         #popupOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.95);
-            display: none; justify-content: center; align-items: center;
-            z-index: 1000; text-align: center; padding: 20px;
+            background: rgba(15, 23, 42, 0.95); display: none; justify-content: center; align-items: center; z-index: 1000; text-align: center; padding: 20px;
         }
-        .popup-content { 
-            background: var(--bg-dark); border: 2px solid var(--primary); 
-            padding: 40px; border-radius: 24px; max-width: 400px;
-            box-shadow: 0 0 50px rgba(0, 242, 254, 0.2);
-        }
-        .popup-content h2 { color: var(--danger); }
-        .popup-content a { color: var(--primary); display: block; margin: 20px 0; word-break: break-all; }
-        .btn-close { background: var(--glass-border); color: white; border: none; padding: 10px 30px; border-radius: 10px; cursor: pointer; }
-
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+        .popup-content { background: var(--bg-dark); border: 2px solid var(--primary); padding: 40px; border-radius: 24px; max-width: 400px; }
     </style>
 </head>
 <body>
 
 <div id="popupOverlay">
-    <div class="popup-content" role="alertdialog" aria-labelledby="popTitle">
-        <h2 id="popTitle">Low Stock Alert</h2>
+    <div class="popup-content">
+        <h2 style="color:var(--danger)">Low Stock Alert</h2>
         <p id="popMsg"></p>
-        <a id="popLink" href="#" target="_blank">Order Link</a>
-        <button class="btn-close" onclick="closePopup()">Dismiss (Enter)</button>
+        <a id="popLink" href="#" target="_blank" style="color:var(--primary); word-break: break-all;">Order Link</a><br><br>
+        <button class="btn-add" style="background:var(--glass); color:white" onclick="closePopup()">Dismiss</button>
     </div>
 </div>
 
 <div class="panel">
     <h1>NeoFridge</h1>
-    <p class="subtitle">Accessible Smart Assistant</p>
+    <p class="subtitle">Smart Assistant</p>
 
     <div class="temp-control">
         <div style="display: flex; justify-content: center; align-items: center; gap: 30px;">
-            <button class="btn-round" onclick="changeTemp(-1)" aria-label="Decrease Temperature">−</button>
+            <button class="btn-round" onclick="changeTemp(-1)">−</button>
             <span class="temp-display" id="temperature">4°C</span>
-            <button class="btn-round" onclick="changeTemp(1)" aria-label="Increase Temperature">+</button>
+            <button class="btn-round" onclick="changeTemp(1)">+</button>
         </div>
     </div>
 
     <div class="inventory">
-        <div class="input-group">
+        <div style="display:flex; gap:10px; margin-bottom:20px;">
             <input type="text" id="itemInput" placeholder="Add item (e.g. Eggs)">
-            <button class="btn-add" id="addItem">Add</button>
+            <button class="btn-add" onclick="manualAdd()">Add</button>
         </div>
         <ul id="itemList"></ul>
     </div>
@@ -127,20 +89,30 @@
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = SpeechRecognition ? new SpeechRecognition() : null;
-    if(recognition) {
-        recognition.continuous = true;
-        recognition.interimResults = false;
-        recognition.lang = 'en-US';
-    }
-
+    
+    // --- SPEECH ENGINE FIX ---
     function speak(text) {
-        window.speechSynthesis.cancel(); // Stop current speech
-        const speech = new SpeechSynthesisUtterance(text);
-        speech.rate = 0.9; // Slightly slower for clarity
-        window.speechSynthesis.speak(speech);
+        // Force-cancel and resume to wake up the engine after long idle times
+        window.speechSynthesis.cancel();
+        
+        if (window.speechSynthesis.paused) {
+            window.speechSynthesis.resume();
+        }
+
+        // Delay speech slightly to let the 'cancel' clear the buffer
+        setTimeout(() => {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.9;
+            utterance.lang = 'en-US';
+
+            // Error handling to log if the engine fails
+            utterance.onerror = (event) => console.error("Speech Error:", event);
+            
+            window.speechSynthesis.speak(utterance);
+        }, 100);
     }
 
-    function showPopup(itemName) {
+    function triggerPopup(itemName) {
         const url = `batviolin.github.io/neofridge/?item=${encodeURIComponent(itemName)}`;
         const msg = `Warning: You are running low on ${itemName}. Only one remaining.`;
         
@@ -149,7 +121,7 @@
         document.getElementById('popLink').textContent = url;
         document.getElementById('popupOverlay').style.display = 'flex';
         
-        speak(msg + ". Order link is now on screen.");
+        return msg + " Order link is now on screen.";
     }
 
     function closePopup() {
@@ -163,40 +135,45 @@
         inventory.forEach((item, index) => {
             const li = document.createElement("li");
             li.innerHTML = `<span>${item.name} (Qty: ${item.qty})</span>
-                <button class="btn-del" onclick="deleteItem(${index})">Remove</button>`;
+                <button style="background:var(--danger); border:none; color:white; border-radius:8px; padding:5px 10px; cursor:pointer;" onclick="deleteItem(${index})">Remove</button>`;
             list.appendChild(li);
         });
     }
 
-    function addItem(name) {
-        name = name.toLowerCase();
+    function handleInventoryUpdate(name, delta, isNew = false) {
+        name = name.toLowerCase().trim();
+        if(!name) return;
+
         let item = inventory.find(i => i.name === name);
-        if (item) {
-            item.qty++;
-            speak(`Increased ${name} to ${item.qty}`);
-        } else {
-            inventory.push({ name: name, qty: 1 });
-            speak(`Added ${name} to inventory.`);
-            showPopup(name);
+        let finalSpeech = "";
+
+        if (isNew && !item) {
+            item = { name: name, qty: 1 };
+            inventory.push(item);
+            finalSpeech = `Added ${name}. `;
+        } else if (item) {
+            item.qty += delta;
+            finalSpeech = `${name} is now ${item.qty}. `;
         }
+
+        if (item && item.qty === 1) {
+            const alertSpeech = triggerPopup(name);
+            finalSpeech += alertSpeech;
+        }
+
+        if (item && item.qty <= 0) {
+            inventory = inventory.filter(i => i.name !== name);
+            finalSpeech = `${name} removed.`;
+        }
+
+        speak(finalSpeech);
         renderInventory();
     }
 
-    function modifyQty(name, delta) {
-        let item = inventory.find(i => i.name === name.toLowerCase());
-        if (item) {
-            item.qty += delta;
-            if (item.qty < 2 && delta < 0 && item.qty > 0) showPopup(name);
-            if (item.qty <= 0) {
-                inventory = inventory.filter(i => i.name !== name.toLowerCase());
-                speak(`${name} removed.`);
-            } else {
-                speak(`${name} is now ${item.qty}`);
-            }
-            renderInventory();
-        } else {
-            speak(`Item ${name} not found.`);
-        }
+    function manualAdd() {
+        const input = document.getElementById('itemInput');
+        handleInventoryUpdate(input.value, 1, true);
+        input.value = "";
     }
 
     function deleteItem(index) {
@@ -209,7 +186,7 @@
     function changeTemp(delta) {
         temperature += delta;
         document.getElementById('temperature').textContent = temperature + "°C";
-        speak(`Temperature is now ${temperature} degrees.`);
+        speak(`Temperature: ${temperature} degrees.`);
     }
 
     function reportStatus() {
@@ -217,30 +194,17 @@
         speak(`Fridge is ${temperature} degrees. Items: ${str || "empty"}`);
     }
 
-    // --- Continuous Voice Logic ---
     if(recognition) {
         recognition.onresult = (event) => {
-            const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
-            console.log("Heard:", transcript);
-
+            const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
             if (transcript.includes("increase temperature")) changeTemp(1);
             else if (transcript.includes("decrease temperature")) changeTemp(-1);
-            else if (transcript.startsWith("add ")) addItem(transcript.replace("add ", ""));
-            else if (transcript.startsWith("increase ")) modifyQty(transcript.replace("increase ", ""), 1);
-            else if (transcript.startsWith("decrease ")) modifyQty(transcript.replace("decrease ", ""), -1);
-            else if (transcript.startsWith("remove ")) {
-                const name = transcript.replace("remove ", "").trim();
-                inventory = inventory.filter(i => i.name !== name);
-                speak(`Removed all ${name} from list.`);
-                renderInventory();
-            }
+            else if (transcript.startsWith("add ")) handleInventoryUpdate(transcript.replace("add ", ""), 1, true);
+            else if (transcript.startsWith("increase ")) handleInventoryUpdate(transcript.replace("increase ", ""), 1);
+            else if (transcript.startsWith("decrease ")) handleInventoryUpdate(transcript.replace("decrease ", ""), -1);
             else if (transcript.includes("status")) reportStatus();
-            else if (transcript.includes("close")) closePopup();
         };
-
-        recognition.onend = () => {
-            if (listening) recognition.start(); // Auto-restart if we are still in "listening mode"
-        };
+        recognition.onend = () => { if (listening) recognition.start(); };
     }
 
     function toggleListening() {
@@ -249,21 +213,14 @@
             listening = true;
             recognition.start();
             btn.textContent = "🛑 STOP LISTENING";
-            btn.classList.add('listening');
-            speak("Voice control active. I am listening.");
+            speak("I am listening.");
         } else {
             listening = false;
             recognition.stop();
             btn.textContent = "🎤 START LISTENING";
-            btn.classList.remove('listening');
-            speak("Voice control deactivated.");
+            speak("Voice off.");
         }
     }
-
-    document.getElementById('addItem').onclick = () => {
-        const input = document.getElementById('itemInput');
-        if(input.value) { addItem(input.value); input.value = ""; }
-    };
 </script>
 </body>
 </html>
